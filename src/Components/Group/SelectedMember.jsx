@@ -1,12 +1,14 @@
 import React from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 
+
 function SelectedMember({handleRemoveMember,member}) {
+
     return (
         <div className='flex items-center bg-slate-300 rounded-full' >
-            <img className="w-7 h-7 rounded-full" src="https://cdn.pixabay.com/photo/2023/10/23/17/10/landscape-8336497_640.jpg"
+            <img className="w-7 h-7 rounded-full" src={member.profilePicture || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png"}
             alt="" />
-            <p className="px-2">username</p>
+            <p className="px-2">{member.fullName}</p>
             <AiOutlineClose onClick={handleRemoveMember} className="pr-1 cursor-pointer" 
             />
             

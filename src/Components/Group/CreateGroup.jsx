@@ -3,20 +3,27 @@ import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
 import SelectedMember from './SelectedMember';
 import ChatCard from '../CharCard/ChatCard';
 import NewGroup from './NewGroup';
+import { searchUser } from '../../Redux/Auth/Action';
+import { useDispatch, useSelector } from 'react-redux';
 
-function CreateGroup({handleCreateGroupFalse}) {
+function CreateGroup({setIsGroup,handleCreateGroupFalse}) {
     const [newGroup, setNewGroup] = useState(false);
     const [groupMember,setGroupMember]=useState(new Set())
     const [query,setQuery]=useState("")
+    const {auth}=useSelector(store=>store)
+    const dispatch = useDispatch();
+
+    const token=localStorage.getItem("token")
     const handleRemoveMember=(item)=>
     {
+        console.log(item)
         const updateMembers = new Set(groupMember);
         updateMembers.delete(item)
         setGroupMember(updateMembers)
     }
-    const handleSearch=(e)=>
+    const handleSearch=(keyword)=>
     {
-
+        dispatch(searchUser({keyword,token}))
     }
     const handleNewGroup=()=>{
         setNewGroup(false)  ;
@@ -51,15 +58,16 @@ function CreateGroup({handleCreateGroupFalse}) {
                             />
                     </div>
                     <div className="bg-white overflow-y-scroll h-[50.2vh]">
-                        {query && [1,1,1,1,1,1].map((item)=><div onClick={()=>
+                        {query && auth.searchuser?.map((item)=><div onClick={()=>
                         {
                             groupMember.add(item)
+                            console.log(groupMember)
                             setGroupMember(groupMember)
                             setQuery("")
                         }}
                         key={item?.id}>
                             <hr />
-                            <ChatCard />
+                            <ChatCard userImg={item.profilePicture} name={item.fullName}/>
                             </div>
                         )}
                         
@@ -75,7 +83,7 @@ function CreateGroup({handleCreateGroupFalse}) {
                     </div>
             </div>
             )}
-            {newGroup && <NewGroup handleNewGroup={handleNewGroup}/>}
+            {newGroup && <NewGroup groupMember={groupMember} setIsGroup={setIsGroup} handleNewGroup={handleNewGroup}/>}
 
             
         </div>
