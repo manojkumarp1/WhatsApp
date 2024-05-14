@@ -1,8 +1,29 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
-function ChatCard({userImg,name}) {
+function ChatCard({userImg,name,chatId}) {
+    const { auth,chat,message } = useSelector(store => store);
+    const time=()=>
+    {
+        console.log(message.messages,"message")
+        
+        const filter = message.messages && message?.messages[message.messages.length - 1]
+        
+        console.log(filter?.timestamp)
+        const timestamp = filter?.timestamp;
+        const date = new Date(timestamp);
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        
+
+        const time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+
+        return time
+    }
    
     return (
+        
        
         <div className="flex items-center justify-center py-2 group cursor-pointer">
             <div className='w-[20%]'>
@@ -11,7 +32,7 @@ function ChatCard({userImg,name}) {
             <div className="pl-5 w-[80%]">
                 <div className='flex justify-between items-center'>
                     <p className="text-lg"> {name} </p>
-                    <p className="text-sm">time</p>
+                    <p className="text-sm">{time()}</p> 
                 </div>
                 <div className="flex justify-between items-center">
                     <p >message....</p>

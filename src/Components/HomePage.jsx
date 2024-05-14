@@ -3,7 +3,7 @@ import { BiCommentDetail } from "react-icons/bi";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BsEmojiSmile, BsFilter, BsMic, BsThreeDotsVertical } from "react-icons/bs";
 import ChatCard from './CharCard/ChatCard';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ImAttachment } from "react-icons/im";
 import "./HomePage.css";
 import whatsapp from '../images/whatsapp.png';
@@ -42,13 +42,11 @@ function HomePage() {
         const sock = new SockJS("http://localhost:8080/ws")
         const temp=over(sock)
         setStompCLient(temp);
-
+        console.log(`Bearer ${token}`)
         console.log("mango")
         const headers={
-            Authorization:`Bearer ${token}`,
-           
-
-        }
+            Authorization: `Bearer ${token}`
+          }
         temp.connect(headers,onConnect,onError);
     }
     const onError=(error)=>
@@ -121,6 +119,18 @@ function HomePage() {
         setMessages(message.messages)
 
     },[message.messages])
+
+    // Ref for scrolling to bottom of messages
+const messagesEndRef = useRef(null);
+
+useEffect(() => {
+    if (messagesEndRef.current) {
+        messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+}, [messages]);
+
+
+
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -168,7 +178,7 @@ function HomePage() {
 
     const handleCurrentChat=(item)=>
     {
-        console.log(item,"f");
+        console.log(item.id,"f");
         setCurrentChat(item);
     }
 
@@ -176,6 +186,7 @@ function HomePage() {
         dispatch(logoutAction());
         navigate("/signin");
     };
+    
     useEffect(() => {
         if (token) {
             dispatch(currentUser(token));
@@ -273,7 +284,11 @@ function HomePage() {
                                     </div>
                                 ))}
 
-                                {chat.chats && chat.chats.length>0 && !querys && chat.chats?.map((item) => (
+                                {chat.chats && chat.chats.length>0 && !querys && chat.chats?.map((item) => 
+                                
+                                    
+                                
+                                    (
                                     <div key={item.id} onClick={() => handleCurrentChat(item)}>
                                         <hr />
                                         {
@@ -290,6 +305,8 @@ function HomePage() {
                                         ):(
                                             <ChatCard
                                                 isChat={true}
+                                                chatId={item.id }
+                                                
                                                 name={
                                                    
                                                     auth.requser?.id!==item?.users[0].id?
@@ -346,9 +363,9 @@ function HomePage() {
                          </div>
                     </div>
 
-                    <div className="px-10 h-[90vh] overflow-y-scroll bg-blue-200">
+                    <div className="px-10 h-[81vh] overflow-y-scroll bg-blue-200" ref={messagesEndRef}>
                         <div className="space-y-1 flex flex-col justify-center  mt-20 py-2">
-                            {message.messages && message.messages.length>0 && message.messages?.map((item,i) => <MessageCard isReqUserMessage={item.user.id!==auth.requser.id} content={item.content}/>)}
+                            {message.messages && message.messages.length>0 && message.messages?.map((item,i) => <MessageCard group={currentChat.group} userName={item.user.fullName} profilePicture={item.user.profilePicture}isReqUserMessage={item.user.id!==auth.requser.id} content={item.content}/>)}
                         </div>
                         
                     </div>

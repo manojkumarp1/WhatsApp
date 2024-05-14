@@ -64,6 +64,7 @@ export const currentUser=(data)=>async(dispatch)=>
             },
             
         })
+        
         const resData=await res.json();
         console.log("currentUser",resData);
         dispatch({type:REQ_USER,payload:resData});
